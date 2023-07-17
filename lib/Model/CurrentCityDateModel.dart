@@ -1,19 +1,19 @@
 class CurrentCityDateModel {
   final String _cityname;
-  final String _lon;
-  final String _lot;
+  final double _lon;
+  final double _lot;
   final String _main;
   final String _description;
-  final String _temp;
-  final String _temp_min;
-  final String _temp_max;
-  final String _pressure;
-  final String _humidity;
-  final String _windspeed;
-  final String _datetime;
+  final double _temp;
+  final double _temp_min;
+  final double _temp_max;
+  final int _pressure;
+  final int _humidity;
+  final double _windspeed;
+  final int _datetime;
   final String _country;
-  final String _sunset;
-  final String _sunrise;
+  final int _sunset;
+  final int _sunrise;
 
   CurrentCityDateModel(
       this._cityname,

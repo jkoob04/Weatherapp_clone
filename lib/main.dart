@@ -2,11 +2,12 @@ import 'dart:ui';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 import 'package:rewa/Model/CurrentCityDateModel.dart';
 
 void main() {
   runApp(
-    MaterialApp(
+    const MaterialApp(
       debugShowCheckedModeBanner: false,
       home: MyApp(),
     ),
@@ -34,7 +35,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Weather App"),
+        title: const Text("Weather App"),
         elevation: 5,
         actions: <Widget>[
           PopupMenuButton<String>(
@@ -56,7 +57,7 @@ class _MyAppState extends State<MyApp> {
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             return Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
                   fit: BoxFit.cover,
                   image: AssetImage('assets/images/sky.jpg'),
@@ -75,13 +76,13 @@ class _MyAppState extends State<MyApp> {
                               padding: const EdgeInsets.only(right: 10),
                               child: ElevatedButton(
                                 onPressed: () {},
-                                child: Text('find'),
+                                child: const Text('find'),
                               ),
                             ),
                             Expanded(
                               child: TextField(
                                 controller: textEditingController,
-                                decoration: InputDecoration(
+                                decoration: const InputDecoration(
                                   hintText: "enter a city name",
                                   border: UnderlineInputBorder(),
                                 ),
@@ -103,7 +104,7 @@ class _MyAppState extends State<MyApp> {
                       Padding(
                         padding: const EdgeInsets.only(top: 13),
                         child: Text(
-                          "C L E A R   S K Y",
+                          snapshot.data?.main ?? '',
                           style: TextStyle(
                               color: Colors.blueGrey[900],
                               fontSize: 18,
@@ -121,7 +122,7 @@ class _MyAppState extends State<MyApp> {
                       Padding(
                         padding: const EdgeInsets.only(top: 10),
                         child: Text(
-                          "14" + "\u00B0",
+                          "${snapshot.data?.temp}" "\u00B0",
                           style: TextStyle(
                               color: Colors.blueGrey[900], fontSize: 80),
                         ),
@@ -138,7 +139,8 @@ class _MyAppState extends State<MyApp> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 8.0),
                                 child: Text(
-                                  "16" + "\u00B0",
+                                  "${snapshot.data?.temp_max ?? 'emty'}"
+                                  "\u00B0",
                                   style:
                                       TextStyle(color: Colors.deepOrange[900]),
                                 ),
@@ -164,7 +166,7 @@ class _MyAppState extends State<MyApp> {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Text(
-                                    "10" + "\u00B0",
+                                    "10" "\u00B0",
                                     style: TextStyle(color: Colors.cyan[900]),
                                   ),
                                 ),
@@ -190,10 +192,11 @@ class _MyAppState extends State<MyApp> {
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (BuildContext contxt, int pos) {
-                            return Container(
+                            return SizedBox(
                               width: 70,
                               child: Card(
                                 elevation: 0,
+                                color: Colors.transparent,
                                 child: Column(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
@@ -209,14 +212,13 @@ class _MyAppState extends State<MyApp> {
                                       size: 30,
                                     ),
                                     Text(
-                                      "10" + "\u00B0",
+                                      "10" "\u00B0",
                                       style: TextStyle(
                                           color: Colors.blueGrey[900],
                                           fontSize: 15),
                                     ),
                                   ],
                                 ),
-                                color: Colors.transparent,
                               ),
                             );
                           },
@@ -347,8 +349,12 @@ class _MyAppState extends State<MyApp> {
             );
           } else {
             return Center(
-                // child: (),
-                );
+              child: JumpingDotsProgressIndicator(
+                color: Colors.black,
+                fontSize: 60,
+                dotSpacing: 2,
+              ),
+            );
           }
         },
       ),
@@ -364,31 +370,34 @@ class _MyAppState extends State<MyApp> {
 //     return Container();
 //   }
 Future<CurrentCityDateModel> sendrequstcurrentweather() async {
-  var apikey = 'a9f319debe9a666a314af5c8c3904b2c';
-  var cityname = "Tehran";
-  var response = await Dio().get(
-      'https://api.openweathermap.org/data/2.5/weather',
-      queryParameters: {'q': cityname, 'appid': apikey, 'units': 'metric'});
-  print(response.data);
-  print(response.statusCode);
+  late CurrentCityDateModel detamodel;
+  try {
+    var apikey = 'a9f319debe9a666a314af5c8c3904b2c';
+    var cityname = "Tehran";
+    var response = await Dio().get(
+        'https://api.openweathermap.org/data/2.5/weather',
+        queryParameters: {'q': cityname, 'appid': apikey, 'units': 'metric'});
+    print(response.data);
 
-  var detamodel = CurrentCityDateModel(
-    response.data['cityname'],
-    response.data["coord"]["lon"],
-    response.data["coord"]["lat"],
-    response.data['weather'][0]['main'],
-    response.data['weather'][0]['description'],
-    response.data['main']['temp'],
-    response.data['main']['_temp_min'],
-    response.data['main']['_temp_max'],
-    response.data['main']['pressure'],
-    response.data['main']['pressure'],
-    response.data['main']['humidity'],
-    response.data['main']['windspeed'],
-    response.data['dt'],
-    response.data['sys']['country'],
-    response.data['sys']['sunrise'],
-  );
+    detamodel = CurrentCityDateModel(
+        'cityname',
+        response.data["coord"]["lon"],
+        response.data["coord"]["lat"],
+        response.data['weather'][0]['main'],
+        response.data['weather'][0]['description'],
+        response.data['main']['temp'],
+        response.data['main']['temp_min'],
+        response.data['main']['temp_max'],
+        response.data['main']['pressure'],
+        response.data['main']['humidity'],
+        response.data['wind']['speed'],
+        response.data['dt'],
+        response.data['sys']['country'],
+        response.data['sys']['sunrise'],
+        response.data['sys']['sunset']);
+  } catch (e) {
+    print(e);
+  }
 
   return detamodel;
 }
