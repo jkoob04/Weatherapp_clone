@@ -94,7 +94,7 @@ class _MyAppState extends State<MyApp> {
                       Padding(
                         padding: const EdgeInsets.only(top: 10),
                         child: Text(
-                          "Moutain View",
+                          snapshot.data?.country ?? "emty",
                           style: TextStyle(
                               color: Colors.blueGrey[900],
                               fontSize: 35,
@@ -166,7 +166,8 @@ class _MyAppState extends State<MyApp> {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 8.0),
                                   child: Text(
-                                    "10" "\u00B0",
+                                    "${snapshot.data?.temp_min ?? 'empty'}"
+                                    "\u00B0",
                                     style: TextStyle(color: Colors.cyan[900]),
                                   ),
                                 ),
@@ -202,7 +203,7 @@ class _MyAppState extends State<MyApp> {
                                       MainAxisAlignment.spaceAround,
                                   children: [
                                     Text(
-                                      "Fr.5:40",
+                                      snapshot.data?.main ?? "empty",
                                       style: TextStyle(
                                           color: Colors.blueGrey[900]),
                                     ),
@@ -212,7 +213,8 @@ class _MyAppState extends State<MyApp> {
                                       size: 30,
                                     ),
                                     Text(
-                                      "10" "\u00B0",
+                                      "${snapshot.data?.temp ?? "empty"}"
+                                      "\u00B0",
                                       style: TextStyle(
                                           color: Colors.blueGrey[900],
                                           fontSize: 15),
@@ -245,7 +247,7 @@ class _MyAppState extends State<MyApp> {
                                         fontSize: 15),
                                   ),
                                   Text(
-                                    '4.75 m/s',
+                                    '${snapshot.data?.windspeed ?? "empty"}',
                                     style: TextStyle(
                                         color: Colors.blueGrey[900],
                                         fontSize: 15),
@@ -269,7 +271,7 @@ class _MyAppState extends State<MyApp> {
                                         fontSize: 15),
                                   ),
                                   Text(
-                                    '6:15 Pm',
+                                    '${snapshot.data?.sunrise ?? "empty"}',
                                     style: TextStyle(
                                         color: Colors.blueGrey[900],
                                         fontSize: 15),
@@ -293,7 +295,7 @@ class _MyAppState extends State<MyApp> {
                                         fontSize: 15),
                                   ),
                                   Text(
-                                    '9:15 Am',
+                                    '${snapshot.data?.sunset ?? "empty"}',
                                     style: TextStyle(
                                         color: Colors.blueGrey[900],
                                         fontSize: 15),
@@ -317,7 +319,7 @@ class _MyAppState extends State<MyApp> {
                                         fontSize: 15),
                                   ),
                                   Text(
-                                    '30%',
+                                    '${snapshot.data?.humidity ?? "empty"}',
                                     style: TextStyle(
                                         color: Colors.blueGrey[900],
                                         fontSize: 15),
@@ -377,7 +379,6 @@ Future<CurrentCityDateModel> sendrequstcurrentweather() async {
     var response = await Dio().get(
         'https://api.openweathermap.org/data/2.5/weather',
         queryParameters: {'q': cityname, 'appid': apikey, 'units': 'metric'});
-    print(response.data);
 
     detamodel = CurrentCityDateModel(
         'cityname',
@@ -396,7 +397,7 @@ Future<CurrentCityDateModel> sendrequstcurrentweather() async {
         response.data['sys']['sunrise'],
         response.data['sys']['sunset']);
   } catch (e) {
-    print(e);
+    emptyTextSelectionControls;
   }
 
   return detamodel;
